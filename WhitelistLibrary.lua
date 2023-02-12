@@ -1,5 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = {2765}
+shared.wl = {4304562300}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
