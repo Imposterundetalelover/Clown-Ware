@@ -1,5 +1,5 @@
 local whitelistfuncs = {}
-whitelistTable = {2765}
+whitelistTable = {2964}
 shared.wl = {4304562300}
 function whitelistfuncs:Hash(id)
 	local h = 0
