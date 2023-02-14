@@ -1,7 +1,5 @@
 local whitelistfuncs = {}
-whitelistTable = {
-	2964,
-}
+whitelistTable = {2964}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
@@ -12,10 +10,10 @@ function whitelistfuncs:Hash(id)
 end
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
-			if v == whitelistfuncs:Hash(id) then
-				return true
-			end
+		if v == whitelistfuncs:Hash(id) then
+			return true
 		end
+	end
 	return false
 end
 shared.whitelist = whitelistfuncs
