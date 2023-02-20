@@ -1,12 +1,13 @@
 local whitelistfuncs = {}
-whitelistTable = {2835}
+whitelistTable = {17469783026888}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
+	local e = id / tostring(id):len() and 2
 	for i = 1, #id do
 		h = h + string.byte(id, i) * i
 	end
-	return h % 2^32
+	return h % 2^tostring(id):len() * (id/string.len(id)*string.byte(id, 2))
 end
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
