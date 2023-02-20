@@ -9,7 +9,7 @@ function whitelistfuncs:Hash(id)
 	end
 	return h + math.round(e*h^0.1) % 2*id*2
 end
---setclipboard(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId))
+
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
 		if v == whitelistfuncs:Hash(id) then
@@ -19,3 +19,4 @@ function whitelistfuncs:isWhitelisted(id)
 	return false
 end
 shared.whitelist = whitelistfuncs
+--setclipboard(tostring(whitelistfuncs:isWhitelisted(game.Players.LocalPlayer.UserId)))
