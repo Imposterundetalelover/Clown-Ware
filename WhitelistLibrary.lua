@@ -1,5 +1,5 @@
 local whitelistfuncs = {}
-whitelistTable = {2964}
+whitelistTable = {2835}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
