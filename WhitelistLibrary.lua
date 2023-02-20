@@ -7,7 +7,7 @@ function whitelistfuncs:Hash(id)
 	for i = 1, #id do
 		h = h + string.byte(id, i) * i
 	end
-	return h % 2^tostring(id):len() * e * (e/h+string.byte(tostring(id,1)))
+	return h % 2^tostring(id):len()
 end
 --setclipboard(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId))
 function whitelistfuncs:isWhitelisted(id)
@@ -19,3 +19,4 @@ function whitelistfuncs:isWhitelisted(id)
 	return false
 end
 shared.whitelist = whitelistfuncs
+
