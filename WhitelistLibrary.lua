@@ -1,5 +1,5 @@
 local whitelistfuncs = {}
-whitelistTable = {81849.110405644}
+whitelistTable = {8705076626}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
@@ -7,9 +7,9 @@ function whitelistfuncs:Hash(id)
 	for i = 1, #id do
 		h = h + string.byte(id, i) * i
 	end
-	return h % 2^tostring(id):len()
+	return h % 2*id*2
 end
---setclipboard(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId))
+setclipboard(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId))
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
 		if v == whitelistfuncs:Hash(id) then
