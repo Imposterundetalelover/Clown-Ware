@@ -1,5 +1,7 @@
 local whitelistfuncs = {}
-whitelistTable = {8724905175}
+whitelistTable = { -- just put 1 for type 2 is different type of wl
+	[1] = {hash = 8724905175, type = 2}
+}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
@@ -12,11 +14,22 @@ end
 
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
-		if v == whitelistfuncs:Hash(id) then
-			return true
+		if v.hash == whitelistfuncs:Hash(id) then
+			return true, v.type
 		end
 	end
 	return false
+end
+function whitelistfuncs:getChatTag(id)
+	local state, type = whitelistfuncs:isWhitelisted(id)
+	if state then
+		if type > 1 then
+			return "OWNER"
+		elseif type < 2 then
+			return "PRIVATE"
+		end
+	end
+	return "USER"
 end
 shared.whitelist = whitelistfuncs
 --setclipboard(tostring(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId)))
