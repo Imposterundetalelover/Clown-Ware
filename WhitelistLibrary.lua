@@ -1,5 +1,5 @@
 local whitelistfuncs = {}
-whitelistTable = {8718284060}
+whitelistTable = {8724905175}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
@@ -19,4 +19,4 @@ function whitelistfuncs:isWhitelisted(id)
 	return false
 end
 shared.whitelist = whitelistfuncs
---setclipboard(tostring(whitelistfuncs:isWhitelisted(game.Players.LocalPlayer.UserId)))
+--setclipboard(tostring(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId)))
