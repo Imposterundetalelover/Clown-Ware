@@ -23,10 +23,12 @@ end
 function whitelistfuncs:getChatTag(id)
 	local state, type = whitelistfuncs:isWhitelisted(id)
 	if state then
-		if type > 1 then
-			return "OWNER"
-		elseif type < 2 then
-			return "PRIVATE"
+		if type ~= nil then
+			if type > 1 then
+				return "OWNER"
+			elseif type < 2 then
+				return "PRIVATE"
+			end
 		end
 	end
 	return "USER"
