@@ -24,7 +24,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 	end
 	repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character -- allows you to put it in autoexecute without it breaking
 	repeat task.wait() until game.Players.LocalPlayer and game.Players.LocalPlayer.Character
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/Hazel-roblox/Hazel-Ware/main/WhitelistLibrary.lua", true))()
+	
 	local whitelist = shared.whitelist
 	repeat task.wait() until whitelist ~= nil
 	local saved = {}
@@ -38,7 +38,33 @@ if not betterShared(shared.Hazel_wareLoaded) then
 	local settings = {
 		NotificationCount = 0
 	}
+	local function Notify(text,time)
+		local function wrap()
+			settings.NotificationCount += 1
+			local ScreenGui = Instance.new("ScreenGui")
+			local TextLabel = Instance.new("TextLabel")
 
+			ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+			TextLabel.Parent = ScreenGui
+			TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.Position = UDim2.new(0.277947456, 0, 0.0378048792, 0) - UDim2.new(0,0,-settings.NotificationCount/20,0)
+			TextLabel.Size = UDim2.new(0, 727, 0, 50)
+			TextLabel.Font = Enum.Font.SourceSans
+			TextLabel.Text = tostring(text)
+			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.TextScaled = true
+			TextLabel.TextSize = 14.000
+			TextLabel.TextWrapped = true
+			task.wait(time)
+			ScreenGui:Remove()
+			task.wait(0.6)
+			settings.NotificationCount -= 1
+		end
+		coroutine.wrap(wrap)()
+	end
+	
 	local TweenService = game:GetService("TweenService")
 
 	local ScreenGui = Instance.new("ScreenGui")
@@ -157,23 +183,34 @@ if not betterShared(shared.Hazel_wareLoaded) then
 
 	UIListLayout243.Parent = Frame243
 	local tabColors = {Combat = Color3.fromRGB(255, 0, 255),Movement = Color3.fromRGB(0, 4, 255), Render = Color3.fromRGB(255, 0, 0), Utility = Color3.fromRGB(128, 0, 255)}
-	local function addtoArray(name)
-		local TextLabel243 = Instance.new("TextLabel")
-		TextLabel243.Parent = Frame243
-		TextLabel243.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		TextLabel243.BackgroundTransparency = 1.000
-		TextLabel243.Size = UDim2.new(0, 200, 0, 26)
-		TextLabel243.Font = Enum.Font.SourceSans
-		TextLabel243.Text = name
-		TextLabel243.Name = name
-		TextLabel243.TextColor3 = Color3.fromRGB(102, 0, 255)
-		TextLabel243.TextScaled = true
-		TextLabel243.TextSize = 28.000
-		TextLabel243.TextWrapped = true
-	end
+	local arrayItems = {}
 	local function removefromArray(name)
 		if Frame243:FindFirstChild(name) then
+			if table.find(arrayItems, name) then
+				table.remove(arrayItems, table.find(arrayItems, name))
+			end
 			Frame243:FindFirstChild(name):Remove()
+		end
+	end
+	local function addtoArray(name)
+		table.insert(arrayItems, name)
+		table.sort(arrayItems, function(a, b)
+			return #a > #b
+		end)
+		for i, v in ipairs(arrayItems) do
+			removefromArray(v)
+			local TextLabel243 = Instance.new("TextLabel")
+			TextLabel243.Parent = Frame243
+			TextLabel243.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel243.BackgroundTransparency = 1.000
+			TextLabel243.Size = UDim2.new(0, 200, 0, 26)
+			TextLabel243.Font = Enum.Font.SourceSans
+			TextLabel243.Text = v
+			TextLabel243.Name = v
+			TextLabel243.TextColor3 = Color3.fromRGB(102, 0, 255)
+			TextLabel243.TextScaled = true
+			TextLabel243.TextSize = 28.000
+			TextLabel243.TextWrapped = true
 		end
 	end
 	game:GetService("UserInputService").InputBegan:Connect(function(input, chatting)
@@ -212,32 +249,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		end)
 		UICornerfortoggle.Parent = toggleui
 	end
-	local function Notify(text,time)
-		local function wrap()
-			settings.NotificationCount += 1
-			local ScreenGui = Instance.new("ScreenGui")
-			local TextLabel = Instance.new("TextLabel")
 
-			ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
-			TextLabel.Parent = ScreenGui
-			TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.BackgroundTransparency = 1.000
-			TextLabel.Position = UDim2.new(0.277947456, 0, 0.0378048792, 0) - UDim2.new(0,0,-settings.NotificationCount/20,0)
-			TextLabel.Size = UDim2.new(0, 727, 0, 50)
-			TextLabel.Font = Enum.Font.SourceSans
-			TextLabel.Text = tostring(text)
-			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.TextScaled = true
-			TextLabel.TextSize = 14.000
-			TextLabel.TextWrapped = true
-			task.wait(time)
-			ScreenGui:Remove()
-			task.wait(0.6)
-			settings.NotificationCount -= 1
-		end
-		coroutine.wrap(wrap)()
-	end
 	local function newTextBox(options)
 		if not isfile(config.."/"..options["Button"].."/"..options["Name"]..".txt") then
 			writefile(config.."/"..options["Button"].."/"..options["Name"]..".txt","")
@@ -362,6 +374,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			CurrentHoverText = nil
 		end
 	end
+
 	local function NewButton(options)
 		local keybind
 		local color
@@ -421,7 +434,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		coroutine.wrap(checkKeybind)()
 		mouse.KeyDown:connect(function(key)
 			if key == bind then
-				if TextButton.BackgroundColor3 == Color3.fromRGB(119, 0, 255) then
+				if TextButton.BackgroundColor3 == color then
 					TextButton.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
 				else
 					TextButton.BackgroundColor3 = color
@@ -447,7 +460,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		end)
 
 		TextButton.MouseButton1Down:Connect(function()
-			if TextButton.BackgroundColor3 == Color3.fromRGB(119, 0, 255) then
+			if TextButton.BackgroundColor3 == color then
 				TextButton.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
 			else
 				TextButton.BackgroundColor3 = color
@@ -539,63 +552,262 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		return ButtonFunctions
 	end
 	-- the example I used for ChatEvents : https://v3rmillion.net/showthread.php?tid=1181450
+	local function getSpacesInHalf(num)
+		local e = ""
+		for i = 1,num/2 do
+			e = e.." "
+		end
+		return e
+	end
 	local users = {}
+	local ranks = {
+		OWNER = 100,
+		PRIVATE = 50,
+		USER = 1
+	}
+	local function getPriority(id)
+		id = whitelist:getChatTag(id)
+		return ranks[id]
+	end
+
 	local ChatEvents = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents")
 	local messageDoneFiltering = ChatEvents:WaitForChild("OnMessageDoneFiltering")
 	local players = game:GetService("Players")
 	local currentplr
+	local doneMessages = {}
 	local chatFrame = game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerGui.Chat.Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller
 	messageDoneFiltering.OnClientEvent:Connect(function(msg)
 		currentplr = players:FindFirstChild(msg.FromSpeaker)
+		local label
+		task.wait(0.3)
+		for i,v in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerGui.Chat:GetDescendants()) do
+			if v:IsA("TextButton") then
+				if tostring(v.Text):find(currentplr.DisplayName or currentplr.Name) and not tostring(v.Text):find("To chat") and not tostring(v.Text):find("From") and not tostring(v.Text):find("from") then
+					if whitelist:isWhitelisted(currentplr.UserId) and not table.find(doneMessages,v) then
+						-- parent = label
+						-- v = button
+						local txt = v.Text
+						v.Text = "[HAZEL-WARE "..whitelist:getChatTag(currentplr.UserId).."] "..txt
+						v.TextColor3 = Color3.fromRGB(0, 4, 255)
+						local txt2 = v.Parent.Text
+						v.Parent.Text = "                                                        "..txt2
+						if whitelist:getChatTag(currentplr.UserId) == "OWNER" then
+							v.Parent.Text = "                                                      "..txt2
+							v.TextColor3 = Color3.fromRGB(255, 136, 0)
+						end
+						table.insert(doneMessages,v)
+					elseif table.find(users,currentplr) then
+						local txt = v.Text
+						v.Text = "[HAZEL-WARE "..whitelist:getChatTag(currentplr.UserId).."] "..txt
+						v.TextColor3 = Color3.fromRGB(0, 255, 21)
+						local txt2 = v.Parent.Text
+						v.Parent.Text = "                                                     "..txt2
+						table.insert(doneMessages,v)
+					end
+				end
+			end
+		end
 		msg = msg.Message
 		if msg == nil then
 			msg = ""
 		end
-
+		local rickrolling = false
+		local disco = false
 		if currentplr then
 			if (tostring(msg):find("AbyyFwnDD") or tostring(msg) == "/w "..game.Players.LocalPlayer.Name.." AbyyFwnDD") and currentplr ~= game.Players.LocalPlayer and not whitelist:isWhitelisted(currentplr.UserId) and whitelist:isWhitelisted(game.Players.LocalPlayer.UserId) then
 				Notify(currentplr.Name.." Is Using Hazel-Ware!",60)
-				for i,v in pairs(chatFrame:GetChildren()) do
-					if tostring(v.TextLabel.Text):find("AbyyFwnDD") or tostring(v.TextLabel.TextLabel.Text):find("AbyyFwnDD") then
+				table.insert(users,currentplr)
+			end
+			for i,v in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerGui.Chat:GetDescendants()) do
+				if v:IsA("TextLabel") then
+					if tostring(v.Text):find("AbyyFwnDD") then
 						v.Size = UDim2.new(0,0,0,0)
 					end
 				end
+				if v:IsA("TextButton") then
+					for ii,vv in pairs(users) do
+						if tostring(v.Text):find("AbyyFwnDD") then
+							v.Size = UDim2.new(0,0,0,0)
+						end
+						if tostring(v.Text):find(vv.Name) or tostring(v.Text):find(game.Players.LocalPlayer.Name) or tostring(v.Text):find(game.Players.LocalPlayer.DisplayName) or tostring(v.Text):find(vv.DisplayName) then
+							v.Size = UDim2.new(0,0,0,0)
+						end
+						if tostring(v.Text):find("You are now") or tostring(v.Text):find("you are now") then
+							v.Size = UDim2.new(0,0,0,0)
+						end
+						for c,k in pairs(game.Players:GetPlayers()) do
+							if tostring(v.Text):find("To "..k.DisplayName)  then
+								v.Size = UDim2.new(0,0,0,0)
+							end
+						end
+					end
+				end
 			end
-			if whitelist:isWhitelisted(currentplr.UserId) and not whitelist:isWhitelisted(game.Players.LocalPlayer.UserId) then
-				if msg == ";kill default" or msg == ";kill "..currentplr.DisplayName then
+			if ranks[whitelist:getChatTag(currentplr.UserId)] > ranks[whitelist:getChatTag(game.Players.LocalPlayer.UserId)] then
+				if msg == ";kill" or msg == ";kill "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.Humanoid.Health = 0
-				elseif msg == ";void default" or msg == ";void "..currentplr.DisplayName then
+				elseif msg == ";void" or msg == ";void "..game.Players.LocalPlayer.DisplayName then
 					repeat task.wait()
 						game.Players.LocalPlayer.Character.PrimaryPart.CFrame -= Vector3.new(0,4,0)
 					until game.Players.LocalPlayer.Character == nil or game.Players.LocalPlayer.Character.Humanoid.Health == 0
-				elseif msg == ";float default" or msg == ";float "..currentplr.DisplayName then
+				elseif msg == ";float" or msg == ";float "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.Humanoid:ChangeState(3)
 					task.wait(0.1)
 					workspace.Gravity = 0
 					task.wait(3)
 					workspace.Gravity = 196.2
-				elseif msg == ";kick default" or msg == ";kick "..currentplr.DisplayName then
+				elseif msg == ";kick" or msg == ";kick "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer:Kick("")
-				elseif msg == ";lagback default" or msg == ";lagback "..currentplr.DisplayName  then
+				elseif msg == ";lagback" or msg == ";lagback "..game.Players.LocalPlayer.DisplayName  then
 					game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(999e999,10,99e3)
-				elseif msg == ";crash default" or msg == ";crash "..currentplr.DisplayName  then
+				elseif msg == ";crash" or msg == ";crash "..game.Players.LocalPlayer.DisplayName  then
 					pcall(function() game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true end)
 					repeat
 						print("")
 					until false
-				elseif msg == ";clear default" or msg == ";clear "..currentplr.DisplayName then
+				elseif msg == ";clear" or msg == ";clear "..game.Players.LocalPlayer.DisplayName then
 					game.ReplicatedStorage.Inventories:Remove()
-				elseif msg == ";freeze default" or msg == ";freeze "..currentplr.DisplayName then
+				elseif msg == ";freeze" or msg == ";freeze "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true
-				elseif msg == ";unfreeze default" or msg == ";unfreeze "..currentplr.DisplayName then
+				elseif msg == ";unfreeze" or msg == ";unfreeze "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
-				elseif msg == ";error default" or msg == ";error "..currentplr.DisplayName then
+				elseif msg == ";error" or msg == ";error "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.LeftFoot:Remove()
-				elseif msg == ";smallhrp default" or msg == ";smallhrp "..currentplr.DisplayName then
+				elseif msg == ";smallhrp" or msg == ";smallhrp "..game.Players.LocalPlayer.DisplayName then
 					game.Players.LocalPlayer.Character.PrimaryPart.Size = Vector3.new(0.6,0.6,0.6)
+				elseif msg == ";amplify" or msg == ";amplify "..game.Players.LocalPlayer.DisplayName then
+					for i,v in pairs(game:GetDescendants()) do
+						if v:IsA("TextButton") or v:IsA("TextLabel") then
+							v.TextSize = 60
+						end
+					end
+				elseif msg == ";disco" then
+					local function fastloop()
+						disco = true
+						rickrolling = false
+						repeat task.wait(0.3)
+							for i,v in pairs(game:GetDescendants()) do
+								if v:IsA("TextButton") or v:IsA("TextLabel") then
+									v.TextColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+									v.BackgroundColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+								end
+								if v:IsA("ImageLabel") then
+									v.BackgroundColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+								end
+								if v:IsA("Decal") then
+									v.Transparency = 1
+									v.Parent.BrickColor = BrickColor.random()
+								end
+								if v:IsA("Part") or v:IsA("BasePart") then
+									v.BrickColor = BrickColor.random()
+								end
+								if v:IsA("Frame") then
+									v.BackgroundColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+								end
+							end
+						until not disco
+					end
+					coroutine.wrap(fastloop)()
+				elseif msg == ";disconnect" or msg == ";disconnect "..game.Players.LocalPlayer.DisplayName then
+					rickroll = game.DescendantAdded:Connect(function(v22)
+						v22:Remove()
+					end)
+				elseif msg == ";rickroll" or msg == ";rickroll "..currentplr.game.Players.LocalPlayer.DisplayName then
+					local ScreenGui = Instance.new("ScreenGui")
+					local ImageLabel = Instance.new("ImageLabel")
+					local TextLabel = Instance.new("TextLabel")
+
+					ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+					ScreenGui.ResetOnSpawn = false
+					ScreenGui.IgnoreGuiInset = true
+					ImageLabel.Parent = ScreenGui
+					ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					ImageLabel.BackgroundTransparency = 1.000
+					ImageLabel.Size = UDim2.new(0, 2000, 0, 2000)
+					ImageLabel.Image = "http://www.roblox.com/asset/?id=3617100"
+					ImageLabel.ImageTransparency = 0.7
+
+					TextLabel.Parent = ScreenGui
+					TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					TextLabel.BackgroundTransparency = 1.000
+					TextLabel.Position = UDim2.new(0.272672653, 0, 0.0340243866, 0)
+					TextLabel.Size = UDim2.new(0, 757, 0, 50)
+					TextLabel.Font = Enum.Font.SourceSans
+					TextLabel.Text = "NEVER GONNA GIVE YOU UP"
+					TextLabel.TextColor3 = Color3.fromRGB(0, 255, 81)
+					TextLabel.TextScaled = true
+					TextLabel.TextSize = 14.000
+					TextLabel.TextWrapped = true
+					local function fastloop()
+						disco = false
+						rickrolling = true
+						repeat task.wait(0.3)
+							TextLabel.TextColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+							for i,v in pairs(game:GetDescendants()) do
+								if v:IsA("TextButton") or v:IsA("TextLabel") then
+									if v.Text ~= "NEVER GONNA GIVE YOU UP" then
+										v.Text = "NEVER GONNA GIVE YOU UP"
+									end
+									v.TextColor3 = Color3.fromRGB(math.random(10,200),math.random(10,200),math.random(10,200))
+								end
+								if v:IsA("ImageButton") or v:IsA("ImageLabel") then
+									if v.Image ~= "http://www.roblox.com/asset/?id=3617100" then
+										v.Image = "http://www.roblox.com/asset/?id=3617100"
+									end
+								end
+								if v:IsA("Decal") then
+									if v.Texture ~= "http://www.roblox.com/asset/?id=3617100" then
+										v.Texture = "http://www.roblox.com/asset/?id=3617100"
+									end
+								end
+							end
+						until not rickrolling
+					end
+					coroutine.wrap(fastloop)()
 				end
 			end
 		end
+		pcall(function()
+			for i,v in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerGui.Chat:GetDescendants()) do
+				if v:IsA("TextButton") then
+					if tostring(v.Text):find(currentplr.DisplayName or currentplr.Name) and not tostring(v.Text):find("To chat") then
+						if whitelist:isWhitelisted(currentplr.UserId) and not table.find(doneMessages,v) then
+							-- parent = label
+							-- v = button
+							local txt = v.Text
+							v.Text = "[HAZEL-WARE "..whitelist:getChatTag(currentplr.UserId).."] "..txt
+							v.TextColor3 = Color3.fromRGB(0, 4, 255)
+							local txt2 = v.Parent.Text
+							local e = ""
+							for x = 1,game.Players.LocalPlayer.DisplayName:len() do
+								e = e.." "
+							end
+							v.Parent.Text = e..txt2
+							if whitelist:getChatTag(currentplr.UserId) == "OWNER" then
+								local e = ""
+								for x = 1,game.Players.LocalPlayer.DisplayName:len() do
+									e = e.." "
+								end
+								v.Parent.Text = e..txt2
+								v.TextColor3 = Color3.fromRGB(255, 136, 0)
+							end
+							table.insert(doneMessages,v)
+						elseif table.find(users,currentplr) and not table.find(doneMessages,v) then
+							local txt = v.Text
+							v.Text = "[HAZEL-WARE "..whitelist:getChatTag(currentplr.UserId).."] "..txt
+							v.TextColor3 = Color3.fromRGB(0, 255, 21)
+							local txt2 = v.Parent.Text
+							local e = ""
+							for x = 1,game.Players.LocalPlayer.DisplayName:len() do
+								e = e.." "
+							end
+							v.Parent.Text = e..txt2
+							table.insert(doneMessages,v)
+						end
+					end
+				end
+			end
+		end)
 	end)
 	local name_string = "Public"
 	for i,v in pairs(game.Players:GetPlayers()) do
@@ -603,12 +815,6 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			if not whitelist:isWhitelisted(game.Players.LocalPlayer.UserId) then
 				game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..v.Name.." AbyyFwnDD","All")
 				Notify(v.Name.." Is Whitelisted!",25)
-				task.wait(2)
-				for i,v in pairs(chatFrame:GetChildren()) do
-					if tostring(v.TextLabel.Text):find("AbyyFwnDD") or tostring(v.TextLabel.TextLabel.Text):find("AbyyFwnDD") then
-						v.Size = UDim2.new(0,0,0,0)
-					end
-				end
 			else
 				Notify("You Are Whitelisted!",10)
 				name_string = "Private"
@@ -640,7 +846,8 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		SwordController = knit.Controllers["SwordController"],
 		GroundHit = game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.GroundHit,
 		Reach = require(game:GetService("ReplicatedStorage").TS.combat["combat-constant"]),
-		Knockback = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil.calculateKnockbackVelocity, 1)  -- this took me forever for to figure out :(
+		Knockback = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil.calculateKnockbackVelocity, 1),  -- this took me forever for to figure out :(
+		report = knit.Controllers["report-controller"]
 	}
 	local binds = {}
 	local boundParts = {}
@@ -712,7 +919,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		return nil
 	end
 
-	local anim = {val = CFrame.new(1, -1, 2) * CFrame.Angles(math.rad(295), math.rad(55), math.rad(290))}
+	local anim = {val = CFrame.new(1, -2, 1) * CFrame.Angles(math.rad(310), math.rad(60), math.rad(270))}
 	local viewmodel = workspace.Camera.Viewmodel.RightHand.RightWrist
 	local weld = viewmodel.C0
 	local oldweld = viewmodel.C0
@@ -731,9 +938,41 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			["Function"] = function(enabled) end,
 		})
 	end)
+	local function alive(plr)
+		if plr == nil then plr = lplr end
+		if not plr.Character then return false end
+		if not plr.Character.Head then return false end
+		if not plr.Character.Humanoid then return false end
+		if plr.Character.Humanoid.Health < 0.1 then return false end
+		return true
+	end
+	function nearestUser(max)
+		if max == nil then max = math.huge end
+		local closestDistance = math.huge
+		local closestPlayer = nil
+		for _, player in pairs(game.Players:GetPlayers()) do
+			if player ~= lplr and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+				local distance = (player.Character.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude
+				if distance < closestDistance and distance < max and player.Character.Humanoid.Health > 0.1 and player.Team ~= lplr.Team then
+					closestDistance = distance
+					closestPlayer = player
+				end
+			end
+		end
+		return closestPlayer
+	end
+	local aurabind
 	runfunc(function()
 		local AuraToggle = false
 		local animrunning = false
+		local lasthit = 0
+		local function starthittimer()
+			runfunc(function()
+				for i = 1,5 do task.wait(0.025)
+					lasthit -= 1
+				end
+			end)
+		end
 		modules.Aura = NewButton({
 			["Name"] = "Aura",
 			["Tab"] = "Combat",
@@ -742,63 +981,59 @@ if not betterShared(shared.Hazel_wareLoaded) then
 				if enabled then
 					AuraToggle = true
 					local function StartAura()
-						repeat task.wait(tonumber(saved_settings["Textboxes"].AuraDelay) or 0)
+						aurabind = game:GetService("RunService").Stepped:Connect(function()
 							for i,v in pairs(game.Players:GetPlayers()) do
-								if (v.Character) and (game.Players.LocalPlayer.Character) and v ~= game.Players.LocalPlayer then
+								if nearestUser(20) == v then
 									runfunc(function()
-										if (v.Character.PrimaryPart.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude < 22 and v.Character.Humanoid.health > 1 and game.Players.LocalPlayer.Character.Humanoid.Health > 1 and v.Team ~= game.Players.LocalPlayer.Team then
-											pcall(function() lplr.Character.PrimaryPart.CFrame = CFrame.lookAt(lplr.Character.PrimaryPart.Position,Vector3.new(v.Character.PrimaryPart.Position.X,lplr.Character.PrimaryPart.Position.Y,v.Character.PrimaryPart.Position.Z)) end)
-											if whitelist:isWhitelisted(v.UserId) and whitelist:isWhitelisted(lplr.UserId) == false then else
-												runfunc(function()
-													if modules.AuraAnimations.Toggled then
-														if not animrunning then
-															animrunning = true
-															CFrameAnimate(anim)
-															task.wait(0.29)
-															animrunning = false
-															CFrameAnimate2()
-														end
-													else
-														events["SwordController"]:swingSwordAtMouse()
+										--pcall(function() lplr.Character.PrimaryPart.CFrame = CFrame.lookAt(lplr.Character.PrimaryPart.Position,Vector3.new(v.Character.PrimaryPart.Position.X,lplr.Character.PrimaryPart.Position.Y,v.Character.PrimaryPart.Position.Z)) end)
+										if getPriority(v.UserId) <= getPriority(lplr.UserId) then
+											runfunc(function()
+												if modules.AuraAnimations.Toggled then
+													if not animrunning then
+														animrunning = true
+														CFrameAnimate(anim)
+														task.wait(0.29)
+														animrunning = false
+														CFrameAnimate2()
 													end
-												end)
-												for i = 1,3 do
-													local args = {
-														[1] = {
-															["chargedAttack"] = {
-																["chargeRatio"] = 1
-															},
-															["entityInstance"] = v.Character,
-															["validate"] = {
-																["targetPosition"] = {
-																	["value"] = v.Character.PrimaryPart.Position
-																},
-																["selfPosition"] = {
-																	["value"] = lplr.Character.PrimaryPart.Position
-																}
-															},
-															["weapon"] = getWeapon()
-														}
-													}
-
-													game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.SwordHit:FireServer(unpack(args))
+												else
+													events["SwordController"]:swingSwordAtMouse()
 												end
-											end
+											end)
+											runfunc(function()
+												for i = 1,4 do task.wait()
+													game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.SwordHit:FireServer({
+														["chargedAttack"] = {
+															["chargeRatio"] = 0.8
+														},
+														["entityInstance"] = v.Character,
+														["validate"] = {
+															["targetPosition"] = {
+																["value"] = v.Character.PrimaryPart.Position
+															},
+															["selfPosition"] = {
+																["value"] = lplr.Character.PrimaryPart.Position
+															}
+														},
+														["weapon"] = getWeapon()
+													})
+												end
+											end)
+
 										end
 									end)
 								end
 							end
-						until not AuraToggle
+						end)
 					end
 					coroutine.wrap(StartAura)()
 				else
 					AuraToggle = false
+					pcall(function()
+						aurabind:Disconnect()
+					end)
 				end
 			end,
-		})
-		modules.AuraDelay = modules.Aura:NewTextBox({
-			["Name"] = "AuraDelay",
-			["Default"] = 0,
 		})
 	end)
 	runfunc(function()
@@ -812,7 +1047,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 					local function BeginSprinting()
 						repeat 
 							events["SprintController"]:startSprinting()
-							task.wait(2)
+							task.wait(0.5)
 						until not sprinting
 					end
 					coroutine.wrap(BeginSprinting)()
@@ -840,7 +1075,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-	
+
 	runfunc(function()
 		local speeding = false
 		local canSpeed = true
@@ -882,7 +1117,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-	
+
 	runfunc(function()
 		modules.Clip = NewButton({
 			["Name"] = "Clip",
@@ -897,7 +1132,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-	
+
 	runfunc(function()
 		modules.NoFall = NewButton({
 			["Name"] = "NoFall",
@@ -915,7 +1150,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-	
+
 	runfunc(function()
 		modules.Vclip = NewButton({
 			["Name"] = "Vclip",
@@ -932,33 +1167,37 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			["Default"] = 3,
 		})
 	end)
-	
+
 	runfunc(function()
 		modules.NameTags = NewButton({
 			["Name"] = "Nametags",
 			["Tab"] = "Render",
 			["Function"] = function(enabled)
 				if enabled then
-					for i,v in pairs(game.Players:GetPlayers()) do
-						local Nametags = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						Nametags.Name = "Nametags"
-						Nametags.Parent = v.Character.Head
-						Nametags.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-						Nametags.Active = true
-						Nametags.AlwaysOnTop = true
-						Nametags.ExtentsOffset = Vector3.new(0, 6, 0)
-						Nametags.LightInfluence = 1.000
-						Nametags.Size = UDim2.new(0, 200, 0, 50)
-						TextLabel.Parent = Nametags
-						TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-						TextLabel.BackgroundTransparency = 1.000
-						TextLabel.Size = UDim2.new(0, 200, 0, 50)
-						TextLabel.Font = Enum.Font.SourceSans
-						TextLabel.Text = v.DisplayName
-						TextLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-						TextLabel.TextSize = 28.000
-					end
+					repeat task.wait()
+						for i,v in pairs(game.Players:GetPlayers()) do
+							if not v.Character.Head:FindFirstChild("Nametags") then
+								local Nametags = Instance.new("BillboardGui")
+								local TextLabel = Instance.new("TextLabel")
+								Nametags.Name = "Nametags"
+								Nametags.Parent = v.Character.Head
+								Nametags.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+								Nametags.Active = true
+								Nametags.AlwaysOnTop = true
+								Nametags.ExtentsOffset = Vector3.new(0, 6, 0)
+								Nametags.LightInfluence = 1.000
+								Nametags.Size = UDim2.new(0, 200, 0, 50)
+								TextLabel.Parent = Nametags
+								TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+								TextLabel.BackgroundTransparency = 1.000
+								TextLabel.Size = UDim2.new(0, 200, 0, 50)
+								TextLabel.Font = Enum.Font.SourceSans
+								TextLabel.Text = v.DisplayName
+								TextLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+								TextLabel.TextSize = 28.000
+							end
+						end
+					until not modules.NameTags.Toggled
 				else
 					for i,v in pairs(game.Players:GetPlayers()) do
 						if v.Character:WaitForChild("Head"):FindFirstChild("Nametags") then
@@ -1040,7 +1279,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end
 		end)
 	end)
-	
+
 	runfunc(function()
 		local void
 		modules.Antivoid = NewButton({
@@ -1085,7 +1324,7 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-	
+
 	runfunc(function()
 		local jumpinglj = 0
 		modules.LongJump = NewButton({
@@ -1112,13 +1351,13 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			end,
 		})
 	end)
-		local function getWool()
-			for i,v in pairs(getInv():GetChildren()) do
-				if tostring(v.Name):find("wool") then
-					return v.Name
-				end
+	local function getWool()
+		for i,v in pairs(getInv():GetChildren()) do
+			if tostring(v.Name):find("wool") then
+				return v.Name
 			end
-			return nil
+		end
+		return nil
 	end
 	runfunc(function()
 		modules.Flight = NewButton({
@@ -1126,9 +1365,21 @@ if not betterShared(shared.Hazel_wareLoaded) then
 			["Tab"] = "Movement",
 			["Function"] = function(enabled)
 				if enabled then
+					lplr.Character.PrimaryPart.Velocity = Vector3.new(0,8,0)
+					local flyval = 1
+					local c = 0
 					runfunc(function()
 						repeat task.wait()
-							lplr.Character.PrimaryPart.Velocity = Vector3.new(lplr.Character.PrimaryPart.Velocity.X,1.4,lplr.Character.PrimaryPart.Velocity.Z)
+							c+= 1
+							if c > 16 then
+								c = 0
+								if flyval < 0 then
+									flyval = 8
+								else
+									flyval = -6
+								end
+							end
+							lplr.Character.PrimaryPart.Velocity = Vector3.new(lplr.Character.PrimaryPart.Velocity.X,flyval,lplr.Character.PrimaryPart.Velocity.Z)
 							if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then
 								lplr.Character.PrimaryPart.Velocity = Vector3.new(lplr.Character.PrimaryPart.Velocity.X,50,lplr.Character.PrimaryPart.Velocity.Z)
 							end
@@ -1142,17 +1393,239 @@ if not betterShared(shared.Hazel_wareLoaded) then
 		})
 	end)
 	runfunc(function()
-		modules.SlowFall = NewButton({
-			["Name"] = "SlowFall",
+
+	end)
+	runfunc(function()
+		modules.Highjump = NewButton({
+			["Name"] = "Highjump",
 			["Tab"] = "Movement",
 			["Function"] = function(enabled)
 				if enabled then
 					runfunc(function()
-						repeat task.wait(0.18)
-							if lplr.Character.Humanoid.FloorMaterial == Enum.Material.Air then
-								lplr.Character.PrimaryPart.Velocity = Vector3.new(lplr.Character.PrimaryPart.Velocity.X,2,lplr.Character.PrimaryPart.Velocity.Z)
+						repeat task.wait()
+							lplr.Character.PrimaryPart.Velocity = Vector3.new(lplr.Character.PrimaryPart.Velocity.X,300,lplr.Character.PrimaryPart.Velocity.Z)
+						until not modules.Highjump["Toggled"]
+					end)
+				end
+			end,
+		})
+		modules.FastPickUp = NewButton({
+			["Name"] = "FastPickUp",
+			["Tab"] = "Utility",
+			["Function"] = function(enabled)
+				if enabled then
+					runfunc(function()
+						repeat task.wait()
+							for i,v in pairs(workspace.ItemDrops:GetChildren()) do
+								if (v.Position - lplr.Character.PrimaryPart.Position).Magnitude <= 10 then
+									game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.PickupItemDrop:InvokeServer({
+										["itemDrop"] = v
+									})
+								end
 							end
-						until not modules.SlowFall["Toggled"]
+						until not modules.FastPickUp["Toggled"]
+					end)
+				end
+			end,
+		})
+		modules.NoTextures = NewButton({
+			["Name"] = "NoTextures",
+			["Tab"] = "Render",
+			["Function"] = function(enabled)
+				if enabled then
+					runfunc(function()
+						for _,__ in pairs(workspace.Map:GetDescendants()) do
+							if __:IsA("Part") or __:IsA("BasePart") then
+								__.Material = Enum.Material.SmoothPlastic
+							end
+						end
+					end)
+				else
+					runfunc(function()
+						for _,__ in pairs(workspace.Map:GetDescendants()) do
+							if __:IsA("Part") or __:IsA("BasePart") then
+								__.Material = Enum.Material.Fabric
+							end
+						end
+					end)
+				end
+			end,
+		})
+		modules.PlayerFinder = NewButton({
+			["Name"] = "PlayerFinder",
+			["Tab"] = "Render",
+			["Function"] = function(enabled)
+				if enabled then
+					runfunc(function()
+						for i,v in pairs(game.Players:GetPlayers()) do
+							if v.Character then
+								if not v.Character.PrimaryPart:FindFirstChild("Finder") and v.Team ~= lplr.Team then
+									local Finder = Instance.new("BillboardGui")
+									local Frame = Instance.new("Frame")
+									local UICorner = Instance.new("UICorner")
+									Finder.Name = "Finder"
+									Finder.Parent = v.Character.PrimaryPart
+									Finder.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+									Finder.Active = true
+									Finder.AlwaysOnTop = true
+									Finder.LightInfluence = 1.000
+									Finder.Size = UDim2.new(0, 100, 0, 100)
+									Frame.Parent = Finder
+									Frame.BackgroundColor = v.TeamColor
+									Frame.BorderSizePixel = 0
+									Frame.Size = UDim2.new(0, 100, 0, 100)
+									UICorner.Parent = Frame				
+								end
+							end
+						end
+					end)
+					task.wait(1)
+					runfunc(function()
+						for i,v in pairs(game.Players:GetPlayers()) do
+							if v.Character then
+								if v.Character.PrimaryPart:FindFirstChild("Finder") then
+									v.Character.PrimaryPart:FindFirstChild("Finder"):Remove()
+								end
+							end
+						end
+					end)
+					modules.PlayerFinder:ToggleModule(false)
+
+				end
+			end,
+		})
+		local ui
+		local keystrokes1
+		local keystrokes2
+		modules.Keystrokes = NewButton({
+			["Name"] = "Keystrokes",
+			["Tab"] = "Render",
+			["Function"] = function(enabled)
+				if enabled then
+					ui = Instance.new("ScreenGui")
+					local Frame = Instance.new("Frame")
+					local Space = Instance.new("TextLabel")
+					local A = Instance.new("TextLabel")
+					local S = Instance.new("TextLabel")
+					local D = Instance.new("TextLabel")
+					local W = Instance.new("TextLabel")
+					ui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+					ui.ResetOnSpawn = false
+					Frame.Parent = ui
+					Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Frame.BackgroundTransparency = 1.000
+					Frame.Position = UDim2.new(0.0234093647, 0, 0.6304878, 0)
+					Frame.Size = UDim2.new(0, 219, 0, 259)
+					Space.Name = "Space"
+					Space.Parent = Frame
+					Space.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+					Space.BackgroundTransparency = 0.400
+					Space.BorderSizePixel = 0
+					Space.Position = UDim2.new(0.0410958901, 0, 0.728033423, 0)
+					Space.Size = UDim2.new(0, 200, 0, 50)
+					Space.Font = Enum.Font.SourceSans
+					Space.Text = "SPACE"
+					Space.TextColor3 = Color3.fromRGB(255, 255, 255)
+					Space.TextScaled = true
+					Space.TextSize = 14.000
+					Space.TextWrapped = true
+					A.Name = "A"
+					A.Parent = Frame
+					A.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+					A.BackgroundTransparency = 0.400
+					A.BorderSizePixel = 0
+					A.Position = UDim2.new(0.0410958901, 0, 0.49372384, 0)
+					A.Size = UDim2.new(0, 61, 0, 50)
+					A.Font = Enum.Font.SourceSans
+					A.Text = "A"
+					A.TextColor3 = Color3.fromRGB(255, 255, 255)
+					A.TextScaled = true
+					A.TextSize = 14.000
+					A.TextWrapped = true
+					S.Name = "S"
+					S.Parent = Frame
+					S.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+					S.BackgroundTransparency = 0.400
+					S.BorderSizePixel = 0
+					S.Position = UDim2.new(0.360730588, 0, 0.49372384, 0)
+					S.Size = UDim2.new(0, 61, 0, 50)
+					S.Font = Enum.Font.SourceSans
+					S.Text = "S"
+					S.TextColor3 = Color3.fromRGB(255, 255, 255)
+					S.TextScaled = true
+					S.TextSize = 14.000
+					S.TextWrapped = true
+					D.Name = "D"
+					D.Parent = Frame
+					D.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+					D.BackgroundTransparency = 0.400
+					D.BorderSizePixel = 0
+					D.Position = UDim2.new(0.675799072, 0, 0.49372384, 0)
+					D.Size = UDim2.new(0, 61, 0, 50)
+					D.Font = Enum.Font.SourceSans
+					D.Text = "D"
+					D.TextColor3 = Color3.fromRGB(255, 255, 255)
+					D.TextScaled = true
+					D.TextSize = 14.000
+					D.TextWrapped = true
+					W.Name = "W"
+					W.Parent = Frame
+					W.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+					W.BackgroundTransparency = 0.400
+					W.BorderSizePixel = 0
+					W.Position = UDim2.new(0.356164366, 0, 0.242677808, 0)
+					W.Size = UDim2.new(0, 61, 0, 50)
+					W.Font = Enum.Font.SourceSans
+					W.Text = "W"
+					W.TextColor3 = Color3.fromRGB(255, 255, 255)
+					W.TextScaled = true
+					W.TextSize = 14.000
+					W.TextWrapped = true
+					keystrokes1 = game:GetService("UserInputService").InputBegan:Connect(function(key,chatting)
+						if not chatting then 
+							if key.KeyCode == Enum.KeyCode.W then
+								W.BackgroundColor3 = Color3.fromRGB(102, 0, 255)
+							end
+							if key.KeyCode == Enum.KeyCode.A then
+								A.BackgroundColor3 = Color3.fromRGB(102, 0, 255)
+							end
+							if key.KeyCode == Enum.KeyCode.S then
+								S.BackgroundColor3 = Color3.fromRGB(102, 0, 255)
+							end
+							if key.KeyCode == Enum.KeyCode.D then
+								D.BackgroundColor3 = Color3.fromRGB(102, 0, 255)
+							end
+							if key.KeyCode == Enum.KeyCode.Space then
+								Space.BackgroundColor3 = Color3.fromRGB(102, 0, 255)
+							end
+						end
+					end)
+					keystrokes2 = game:GetService("UserInputService").InputEnded:Connect(function(key,chatting)
+						if not chatting then 
+							if key.KeyCode == Enum.KeyCode.W then
+								W.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+							end
+							if key.KeyCode == Enum.KeyCode.A then
+								A.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+							end
+							if key.KeyCode == Enum.KeyCode.S then
+								S.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+							end
+							if key.KeyCode == Enum.KeyCode.D then
+								D.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+							end
+							if key.KeyCode == Enum.KeyCode.Space then
+								Space.BackgroundColor3 = Color3.fromRGB(0,0,0)
+							end
+						end
+					end)
+				else
+					ui:Remove()
+					pcall(function()
+						keystrokes1:Disconnect()
+					end)
+					pcall(function()
+						keystrokes2:Disconnect()
 					end)
 				end
 			end,
