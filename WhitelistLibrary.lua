@@ -1,7 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = { -- just put 1 for type 2 is different type of wl
-	[1] = {hash = 2915, type = 2},
-	[2] = {hash = 8709468779, type = 1}
+	[1] = {hash = 29154382851882, type = 2},
 }
 function whitelistfuncs:Hash(id)
 	local h = 0
@@ -10,7 +9,7 @@ function whitelistfuncs:Hash(id)
 	for i = 1, #id do
 		h = h + string.byte(id, i) * i
 	end
-	return h + math.round(e*h^0.1) % 2*id*2
+	return h + math.round(e*h^0.1) % 2*(tonumber(tostring(id*(id/5)):len()))*2 ..id/id:len()*id:len()
 end
 
 function whitelistfuncs:isWhitelisted(id)
