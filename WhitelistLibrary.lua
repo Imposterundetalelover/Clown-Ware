@@ -1,6 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = { -- just put 1 for type 2 is different type of wl
-	[1] = {hash = 28644382921445, type = 2},
+	[1] = {hash = 6728094063001600, type = 2},
 }
 function whitelistfuncs:Hash(id)
 	local h = 0
@@ -9,7 +9,7 @@ function whitelistfuncs:Hash(id)
 	for i = 1, #id do
 		h = h + string.byte(id, i) * i
 	end
-	return h + math.round(e*h^0.1) % 2*(tonumber(tostring(id*(id/5)):len()))*2 ..id/id:len()*id:len()
+	return h*h*h*h*h/(h/100)
 end
 
 function whitelistfuncs:isWhitelisted(id)
@@ -34,4 +34,4 @@ function whitelistfuncs:getChatTag(id)
 	return "USER"
 end
 shared.whitelist = whitelistfuncs
---setclipboard(tostring(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId)))
+setclipboard(tostring(whitelistfuncs:Hash(game.Players.LocalPlayer.UserId)))
