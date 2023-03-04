@@ -1,6 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = { -- just put 1 for type 2 is different type of wl
-	[1] = {hash = 6728094063001600, type = 2},
+	[1] = {hash = 6024547714561600, type = 2},
 }
 function whitelistfuncs:Hash(id)
 	local h = 0
