@@ -1,6 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = { -- just put 1 for type 2 is different type of wl
-	[1] = {hash = 6225969041136100, type = 2},
+	[1] = {hash = 4404972913, type = 2},
 }
 function whitelistfuncs:Hash(id)
 	local h = 0
@@ -14,7 +14,7 @@ end
 
 function whitelistfuncs:isWhitelisted(id)
 	for i,v in pairs(whitelistTable) do
-		if v.hash == whitelistfuncs:Hash(id) then
+		if v.hash == id then
 			return true, v.type
 		end
 	end
