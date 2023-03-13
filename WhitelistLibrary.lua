@@ -3,6 +3,7 @@ whitelistTable = { -- just put 1 for type 2 is different type of wl
 	[1] = {hash = 4414467205, type = 2},
 	[2] = {hash = 4345278512, type = 1}
 }
+whitelistTable2 = {4414467205}
 function whitelistfuncs:Hash(id)
 	local h = 0
 	id = tostring(id)
@@ -24,7 +25,7 @@ end
 function whitelistfuncs:getChatTag(id)
 	local state, type = whitelistfuncs:isWhitelisted(id)
 	if state then
-			if type == 2 then
+			if type == 2 or table.find(whitelistTable2,id) then
 				return "OWNER"
 			elseif type == 1 then
 				return "PRIVATE"
