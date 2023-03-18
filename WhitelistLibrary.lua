@@ -1,6 +1,6 @@
 local whitelistfuncs = {}
 whitelistTable = { -- just put 1 for type 2 is different type of wl
-	[1] = {hash = 4428207019, type = 2},
+	[1] = {hash = 4434119905, type = 2},
 	[2] = {hash = 4345278512, type = 1}
 }
 whitelistTable2 = {4414467205}
